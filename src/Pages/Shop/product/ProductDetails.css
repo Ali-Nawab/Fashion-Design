@@ -1,0 +1,5 @@
+/* ProductDetails.css */
+.ring-effect {
+    border: 2px solid green;
+    box-shadow: 0 0 0 2px rgba(0, 128, 0, 0.5);
+  }

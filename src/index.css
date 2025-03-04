@@ -1,0 +1,234 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* *, ::before, ::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Roboto
+} */
+@layer base {
+  body {
+    @apply text-sm custom-sm:text-base leading-relaxed;
+  }
+  ul {
+    @apply list-none; /* list-style-type: none */
+  }
+  a {
+    @apply no-underline; /* text-decoration: none */
+  }
+  img:not(.nav-logo) {
+    @apply w-full block; /* width: 100%; display: block */
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply tracking-wide capitalize mb-3 leading-snug; /* letter-spacing, text-transform, line-height, margin-bottom */
+  }
+  h1 {
+    @apply text-3xl custom-sm:text-4xl md:text-5xl; /* Responsive font size */
+  }
+  h2 {
+    @apply text-2xl custom-sm:text-2.5xl;
+  }
+  h3 {
+    @apply text-lg custom-sm:text-xl;
+  }
+  h4 {
+    @apply text-sm custom-sm:text-base;
+  }
+
+  p {
+    @apply mb-5 text-gray-500; /* margin-bottom, color */
+  }
+
+}
+
+@layer component{
+  .btn {
+    @apply capitalize bg-primary-600 text-white py-2 px-4 tracking-wide shadow-md text-sm border-2 border-transparent cursor-pointer transition hover:bg-primary-700 ; /* Matches your button styles */
+    display: block;
+  }
+  .section {
+    @apply py-20; /* padding: 5rem 0 */
+  }
+  .section-title {
+    @apply text-center mb-16; /* text-align and margin-bottom */
+  }
+  .section-title h2 {
+    @apply uppercase; /* text-transform */
+  }
+  .section-title span {
+    @apply text-primary-500; /* color */
+  }
+  .section-center {
+    @apply w-[90vw] mx-auto max-w-screen-lg md:w-[95vw]; /* Responsive widths */
+  }
+  .nav-item {
+    position: relative;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-item::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #1D4ED8; /* Replace with your desired color */
+    transition: all 0.3s ease;
+  }
+  
+  .nav-item:hover::after {
+    width: 100%;
+  }
+
+  nav {
+    background-color: rgba(255, 255, 255, 0.8); /* Light background with transparency */
+    backdrop-filter: blur(10px); /* Add a blur effect */
+    transition: background-color 0.3s ease-in-out;
+  }
+  .FollowUs li:hover{
+    color: white;
+  }
+  .hero{
+    min-height: 100vh;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+  }
+  .hero-center{
+    text-align: center;
+  }
+  .nav-links{
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .nav-link{
+    align-self: center;
+    justify-self: center;
+    cursor: pointer
+  }
+
+
+  ::-webkit-scrollbar {
+    width: 10px; /* Set the width of the scrollbar */
+  }
+  
+  /* Change the track color */
+  ::-webkit-scrollbar-track {
+    background: #f4e5ec; /* Light gray color for the track */
+    border-radius: 10px;
+  }
+  
+  /* Change the thumb (scroll handle) color */
+  ::-webkit-scrollbar-thumb {
+    background: #f10674; /* Dark gray color for the thumb */
+    border-radius: 10px;
+  }
+  
+  /* Change the thumb color on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #111827; /* Darker gray color for the thumb on hover */
+  }
+
+  .bg-hero-img {
+    background-image: url('./assets/background_6.png'); /* Replace with your image path */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+  .bg-hero-img2{
+    background-image: url('./assets/background-6-removebg-preview.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+  .bg-hero-img3{
+    background-image: url('./assets/background-3-removebg-preview.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .bg-hero-img4{
+    background-image: url('./assets/background-4-removebg-preview.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+  .btn-bg{
+    background-image: url("./assets/btn_bg_image.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* padding: 1rem 1.5rem;
+    height: 2.5rem;
+    width: 230px;
+    display: grid;
+    place-items: center; */
+  }
+  .swiper-button-next,
+.swiper-button-prev {
+  color: #6b7280; /* Gray color, change as needed */
+  transition: color 0.3s ease;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: #4b5563; /* Darker gray or any color for hover */
+}
+.navbar{
+  height: 5rem;
+  padding: 1rem;
+  display: grid;
+  align-items: center;
+}
+.navbar-center{
+  width: 100%;
+  max-width: 1170px;
+  margin: 0 auto;
+}
+.nav-header{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+.nav-btn{
+  background: transparent;
+  border-color: transparent;
+  outline: none;
+  font-size: 2rem;
+  cursor: pointer;
+}
+.footer-center ul li {
+  transition: all 0.3s ease;
+}
+
+.footer-center ul li:hover:not(.FollowUs li) {
+  transform: translateX(5px);
+}
+.singleCard{
+  border-radius: 2rem;
+}
+.product-center{
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+.filled {
+  color: #FFD700; /* Gold */
+}
+
+.unfilled {
+  color: #E0E0E0; /* Light gray */
+}
+}
