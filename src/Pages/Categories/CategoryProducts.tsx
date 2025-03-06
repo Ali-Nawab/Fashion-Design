@@ -47,7 +47,7 @@ interface ProductsCardProps {
 }
 
 interface CartItem {
-  id: string;
+  productId: string;
   name: string;
   price: number;
   quantity: number;
@@ -74,7 +74,7 @@ const CategoryProducts: React.FC<ProductsCardProps> = ({ products }) => {
   const handleAddToCart = (cartProduct: Product) => {
     const availabeSize = cartProduct.subcategories.find((sub) => sub.stock > 0)
     const cartItem: CartItem = {
-      id: cartProduct._id,
+      productId: cartProduct._id,
       name: cartProduct.name,
       price: cartProduct.discountedPrice ?? cartProduct.originalPrice ?? 0,
       quantity: 1,
@@ -134,7 +134,7 @@ const CategoryProducts: React.FC<ProductsCardProps> = ({ products }) => {
             >
               <StyledBadge
                 badgeContent={
-                  cartItems.find((item) => item.id === product._id)?.quantity
+                  cartItems.find((item) => item.productId === product._id)?.quantity
                 }
               >
                 <ShoppingCartIcon style={{ color: "red" }} />

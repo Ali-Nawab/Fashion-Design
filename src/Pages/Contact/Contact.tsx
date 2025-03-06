@@ -9,14 +9,21 @@ import {
   FaPhoneAlt,
   FaEnvelope,
 } from "react-icons/fa";
+interface FormData {
+  FirstName: string;
+  LastName: string;
+  PhoneNo: number;
+  Email: string;
+  Message: string;
+}
 import { useForm as useHookForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import TextField from "@mui/material/TextField";
-import { useForm, ValidationError } from "@formspree/react";
+import { useForm } from "@formspree/react";
+import { motion } from "framer-motion";
 
 const Contact: React.FC = () => {
-  // Yup schema for validation
   const schema = yup.object().shape({
     FirstName: yup.string().required("First Name is required"),
     LastName: yup.string().required("Last Name is required"),
@@ -24,181 +31,74 @@ const Contact: React.FC = () => {
       .number()
       .typeError("Phone No must be a number")
       .required("Phone No is required"),
-    Email: yup
-      .string()
-      .email("Must be a valid email")
-      .required("Email is required"),
+    Email: yup.string().email("Must be a valid email").required("Email is required"),
     Message: yup.string().required("Message is required"),
   });
 
-  // Using react-hook-form with yup validation
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useHookForm({
-    resolver: yupResolver(schema),
-  });
+  } = useHookForm({ resolver: yupResolver(schema) });
 
-  // Formspree form setup
   const [state, handleSubmitFormspree] = useForm("xpwaerog");
-
-  // On form submit, validate first and then submit to Formspree
-  const onSubmit = async (data: any) => {
-    await handleSubmitFormspree(data);
+  const onSubmit = async (data: FormData) => {
+    await handleSubmitFormspree({ ...data });
   };
 
   if (state.succeeded) {
     return (
-      <div className="flex justify-center items-center h-screen bg-[#eee]">
-        <p className="text-2xl font-bold text-red-500">
+      <div className="flex justify-center items-center h-screen bg-gray-100">
+        <motion.p className="text-2xl font-bold text-red-500" initial={{ scale: 0 }} animate={{ scale: 1 }}>
           Thanks for getting in touch!
-        </p>
+        </motion.p>
       </div>
     );
   }
 
   return (
-    <section className="bg-[#eee] py-8 overflow-x-hidden">
-      <div className="mb-5 text-center md:section-title mt-8">
-        <h2 className="font-bold text-red-500 text-[35px] md:text-[48px]">
-          Get in Touch
-        </h2>
-      </div>
-      <div className="section-center max-w-[1200px] mx-auto px-4">
-        <p className="font-medium text-center leading-7 text-lg text-[#555] mt-4">
-          In the case of any kind of query, you can contact us freely. We will
-          be happy to entertain you.
-        </p>
-        <div className="py-8 grid gap-8 md:grid-cols-2">
-          {/* Contact Form */}
-          <div className="bg-white p-8 rounded-lg shadow-lg">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <TextField
-                label="First Name"
-                fullWidth
-                variant="outlined"
-                type="text"
-                className="control-form"
-                placeholder="First Name"
-                {...register("FirstName")}
-                error={!!errors.FirstName}
-                helperText={errors.FirstName?.message}
-              />
-              <TextField
-                label="Last Name"
-                variant="outlined"
-                fullWidth
-                type="text"
-                className="control-form"
-                placeholder="Last Name"
-                {...register("LastName")}
-                error={!!errors.LastName}
-                helperText={errors.LastName?.message}
-              />
-              <TextField
-                label="Phone No."
-                fullWidth
-                variant="outlined"
-                type="tel"
-                className="control-form"
-                placeholder="Phone No."
-                {...register("PhoneNo")}
-                error={!!errors.PhoneNo}
-                helperText={errors.PhoneNo?.message}
-              />
-              <TextField
-                label="Email"
-                fullWidth
-                variant="outlined"
-                type="email"
-                className="control-form"
-                placeholder="Email"
-                {...register("Email")}
-                error={!!errors.Email}
-                helperText={errors.Email?.message}
-              />
-              <TextField
-                label="Message"
-                fullWidth
-                variant="outlined"
-                multiline
-                rows={4}
-                className="control-form"
-                placeholder="Enter your message"
-                {...register("Message")}
-                error={!!errors.Message}
-                helperText={errors.Message?.message}
-              />
-              <button
-                className="w-full bg-red-500 text-white py-3 rounded-lg text-xl hover:bg-red-600 transition-colors"
-                type="submit"
-                disabled={state.submitting}
-              >
-                Send Message
-              </button>
-            </form>
-          </div>
+    <section className="bg-gray-100 py-12 overflow-hidden">
+      <motion.div className="text-center mb-10" initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }}>
+        <h2 className="text-4xl font-bold text-red-500">Get in Touch</h2>
+      </motion.div>
+      <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-10">
+        <motion.div className="bg-white p-8 rounded-lg shadow-lg" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <TextField label="First Name" fullWidth variant="outlined" {...register("FirstName")} error={!!errors.FirstName} helperText={errors.FirstName?.message} />
+            <TextField label="Last Name" fullWidth variant="outlined" {...register("LastName")} error={!!errors.LastName} helperText={errors.LastName?.message} />
+            <TextField label="Phone No." fullWidth variant="outlined" {...register("PhoneNo")} error={!!errors.PhoneNo} helperText={errors.PhoneNo?.message} />
+            <TextField label="Email" fullWidth variant="outlined" {...register("Email")} error={!!errors.Email} helperText={errors.Email?.message} />
+            <TextField label="Message" fullWidth multiline rows={4} variant="outlined" {...register("Message")} error={!!errors.Message} helperText={errors.Message?.message} />
+            <motion.button className="w-full bg-red-500 text-white py-3 rounded-lg text-lg hover:bg-red-600 transition transform hover:scale-105" type="submit" disabled={state.submitting} whileHover={{ scale: 1.05 }}>
+              Send Message
+            </motion.button>
+          </form>
+        </motion.div>
 
-          {/* Contact Info */}
-          <div className="bg-white p-8 rounded-lg shadow-lg">
-            <div className="space-y-6">
-              <div className="text-xl font-medium">
-                <p>
-                  <FaMapMarkerAlt className="inline mr-2 text-red-500" />
-                  1st Floor, Al-Madina Plaza, Anwar Chowk, Wah Cantt, Pakistan
-                </p>
-              </div>
-              <div className="text-xl font-medium">
-                <p>
-                  <FaPhoneAlt className="inline mr-2 text-red-500" />
-                  +92 300 0000000
-                </p>
-              </div>
-              <div className="text-xl font-medium">
-                <p>
-                  <FaEnvelope className="inline mr-2 text-red-500" />
-                  alinawabkhan15@gmail.com
-                </p>
-              </div>
-              <div className="text-xl">
-                <p className="font-bold mb-2">Get Social:</p>
-                <div className="flex space-x-4">
-                  <a href="#" className="text-2xl text-red-500 hover:text-red-600">
-                    <FaFacebook />
-                  </a>
-                  <a href="#" className="text-2xl text-red-500 hover:text-red-600">
-                    <FaTwitter />
-                  </a>
-                  <a href="#" className="text-2xl text-red-500 hover:text-red-600">
-                    <FaInstagram />
-                  </a>
-                  <a href="#" className="text-2xl text-red-500 hover:text-red-600">
-                    <FaLinkedin />
-                  </a>
-                  <a href="#" className="text-2xl text-red-500 hover:text-red-600">
-                    <FaYoutube />
-                  </a>
-                </div>
-              </div>
-              <div className="text-xl">
-                <p className="font-bold mb-2">Subscribe:</p>
-                <form className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                  <TextField
-                    label="Email"
-                    fullWidth
-                    type="email"
-                    className="control-form"
-                    placeholder="Enter Email"
-                  />
-                  <button className="bg-red-500 text-white py-3 px-6 rounded-lg text-xl hover:bg-red-600 transition-colors">
-                    Submit
-                  </button>
-                </form>
-              </div>
+        <motion.div className="bg-white p-8 rounded-lg shadow-lg space-y-6" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+          <p className="text-lg"><FaMapMarkerAlt className="inline mr-2 text-red-500" /> 1st Floor, Al-Madina Plaza, Wah Cantt, Pakistan</p>
+          <p className="text-lg"><FaPhoneAlt className="inline mr-2 text-red-500" /> +92 300 0000000</p>
+          <p className="text-lg"><FaEnvelope className="inline mr-2 text-red-500" /> alinawabkhan15@gmail.com</p>
+          <div>
+            <p className="font-bold mb-2">Get Social:</p>
+            <div className="flex space-x-4">
+              {[FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube].map((Icon, index) => (
+                <motion.a key={index} href="#" className="text-2xl text-red-500 hover:text-red-600" whileHover={{ scale: 1.2 }}>
+                  <Icon />
+                </motion.a>
+              ))}
             </div>
           </div>
-        </div>
+          <div>
+            <p className="font-bold mb-2">Subscribe:</p>
+            <form className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+              <TextField label="Email" fullWidth type="email" placeholder="Enter Email" />
+              <motion.button className="bg-red-500 text-white py-3 px-6 rounded-lg text-lg hover:bg-red-600 transition transform hover:scale-105" whileHover={{ scale: 1.05 }}>
+                Submit
+              </motion.button>
+            </form>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
