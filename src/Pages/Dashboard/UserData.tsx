@@ -1,14 +1,65 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { RootState } from "../../redux/store";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 import apis from "../../utils/apis";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+
+interface CartItem {
+  productId: string;
+  name: string;
+  size: string;
+  price: number;
+  quantity: number;
+}
+
+interface OrderProduct {
+  productId: string;
+  name: string;
+  quantity: number;
+  price: number;
+  size: string;
+}
+
+interface OrderStatus {
+  orderId: string;
+  status: string;
+  paymentMethod: string;
+  products: OrderProduct[];
+}
+
+interface PurchasedItem {
+  productId: string;
+  name: string;
+  size: string;
+  price: number;
+  quantity: number;
+}
+
+// interface User {
+//   CartItems: CartItem[];
+//   OrderStatus: OrderStatus[];
+//   PurchasedItems: PurchasedItem[];
+// }
+
+interface ChartData {
+  name: string;
+  quantity: number;
+}
 
 const UserData: React.FC = () => {
   const { user_id } = useSelector((state: RootState) => state.user);
-  const [purchasedItems, setPurchasedItems] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
-  const [orderStatus, setOrderStatus] = useState([]);
+  const [purchasedItems, setPurchasedItems] = useState<PurchasedItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [orderStatus, setOrderStatus] = useState<OrderStatus[]>([]);
   
   // State for total quantities
   const [totalPurchasedQuantity, setTotalPurchasedQuantity] = useState(0);
@@ -20,7 +71,7 @@ const UserData: React.FC = () => {
     try {
       const response = await fetch(`${apis().specificUser}/${user_id}`, {
         method: "GET",
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
 
       const result = await response.json();
@@ -35,23 +86,15 @@ const UserData: React.FC = () => {
         console.log(result.user);
 
         if (result.user) {
-          const cartItems = result.user.CartItems || [];
-          const orderStatus = result.user.OrderStatus || [];
-          const purchasedItems = result.user.PurchasedItems || [];
 
-          setCartItems(cartItems);
-          setOrderStatus(orderStatus);
-          setPurchasedItems(purchasedItems);
+          setCartItems(result.user.CartItems || []);
+          setOrderStatus(result.user.OrderStatus || []);
+          setPurchasedItems(result.user.PurchasedItems || []);
 
-          // Calculate total quantities
-          setTotalPurchasedQuantity(purchasedItems.reduce((sum, item) => sum + (item.quantity || 0), 0));
-          setTotalCartQuantity(cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0));
-          setTotalOrderQuantity(orderStatus.reduce((sum, order) => 
-            sum + order.products.reduce((orderSum, product) => orderSum + (product.quantity || 0), 0), 0));
         }
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error("Error fetching user data:", error);
     }
   };
 
@@ -59,9 +102,26 @@ const UserData: React.FC = () => {
     fetchUserData();
   }, []);
 
+  useEffect(() => {
+    setTotalPurchasedQuantity(
+      purchasedItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
+    );
+    setTotalCartQuantity(
+      cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
+    );
+    setTotalOrderQuantity(
+      orderStatus.reduce(
+        (sum, order) =>
+          sum + order.products.reduce((orderSum, product) => orderSum + (product.quantity || 0), 0),
+        0
+      )
+    );
+  }, [purchasedItems, cartItems, orderStatus]); // ✅ Now updates when these states change
+  
+
   // Function to transform PurchasedItems into chart data
-  const transformData = (purchasedItems) => {
-    const productCounts = {};
+  const transformData = (purchasedItems: PurchasedItem[]): ChartData[] => {
+    const productCounts: Record<string, number> = {};
 
     purchasedItems.forEach((item) => {
       if (productCounts[item.name]) {
@@ -81,51 +141,25 @@ const UserData: React.FC = () => {
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen">
-      {/* Cards Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {/* Purchased Items Card */}
-        <div className="bg-green-500 text-white rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105">
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-2">Purchased Items</h2>
-            <p className="text-4xl font-bold mb-4 text-white">{totalPurchasedQuantity}</p>
-            <p className="text-sm text-white">Total quantity of purchased items.</p>
-          </div>
+        <div className="bg-green-500 text-white rounded-lg shadow-lg p-6">
+          <h2 className="text-2xl font-bold mb-2">Purchased Items</h2>
+          <p className="text-4xl font-bold mb-4 text-white">{totalPurchasedQuantity}</p>
         </div>
-
-        {/* Order Items Card */}
-        <div className="bg-blue-500 text-white rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105">
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-2">Order Items</h2>
-            <p className="text-4xl font-bold mb-4 text-white">{totalOrderQuantity}</p>
-            <p className="text-sm text-white">Total quantity of ordered items.</p>
-          </div>
+        <div className="bg-blue-500 text-white rounded-lg shadow-lg p-6">
+          <h2 className="text-2xl font-bold mb-2">Order Items</h2>
+          <p className="text-4xl font-bold mb-4 text-white">{totalOrderQuantity}</p>
         </div>
-
-        {/* Cart Items Card */}
-        <div className="bg-orange-500 text-white rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105">
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-2">Cart Items</h2>
-            <p className="text-4xl font-bold mb-4 text-white">{totalCartQuantity}</p>
-            <p className="text-sm text-white">Total quantity of cart items.</p>
-          </div>
+        <div className="bg-orange-500 text-white rounded-lg shadow-lg p-6">
+          <h2 className="text-2xl font-bold mb-2">Cart Items</h2>
+          <p className="text-4xl font-bold mb-4 text-white">{totalCartQuantity}</p>
         </div>
       </div>
-
-      {/* Bar Chart Section */}
       <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold mb-4">Most Purchased Products</h2>
-        <div style={{ width: '100%', height: '400px' }}>
+        <h2 className="text-2xl font-bold mb-4 text-white">Most Purchased Products</h2>
+        <div style={{ width: "100%", height: "400px" }}>
           <ResponsiveContainer>
-            <BarChart
-              layout="vertical"
-              data={chartData}
-              margin={{
-                top: 20,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
+            <BarChart layout="vertical" data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" />
               <YAxis type="category" dataKey="name" width={150} />
