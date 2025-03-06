@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { clearUser } from "../redux/features/User/UserSlice"
 
 interface CartItem {
-  id: number;
+  productId: string;
   name: string;
   price: number;
   quantity: number;
@@ -24,7 +24,7 @@ interface CartItem {
 const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation(); // To get the current path
-  const { products } = useSelector((state: RootState) => state.cart);
+  const products: CartItem[] = useSelector((state: RootState) => state.cart.products);
 
   const { user_id, imageURL } = useSelector((state: RootState) => state.user);
   const totalCartItems = products.reduce(
