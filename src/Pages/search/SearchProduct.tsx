@@ -1,24 +1,91 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import CategoryProducts from '../Categories/CategoryProducts';
-import products from '../../data/products.json'; // Assuming the products data is stored here.
+import apis from "../../utils/apis";
+
+interface Product {
+    _id: string;
+    name: string;
+    category: string;
+    description: string;
+    originalPrice: number;
+    discountedPrice?: number;
+    discountedPercentage?: number;
+    rating: number;
+    stock: number;
+    brand: string;
+    warrantyInformation: string;
+    shippingInformation: string;
+    availabilityStatus: string;
+    returnPolicy: string;
+    color: string;
+    author: string;
+    imageURL: string;
+    subcategories: {
+      size: string;
+      price: number;
+      stock: number;
+    }[];
+    reviews: {
+      rating: number;
+      comment: string;
+      reviewerName: string;
+      reviewerId: string;
+    }[];
+}
 
 interface SearchProductProps {
-    filterValue: string; // Define the expected prop type
+    filterValue: string;
 }
 
 const SearchProduct: React.FC<SearchProductProps> = ({ filterValue }) => {
-    // Filter the products based on the input value
+    const [Products, setProducts] = useState<Product[]>([]);
+    const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
-    const [filteredProducts, setFilteredProducts] = React.useState<typeof products>([]);
+    const fetchedData = async () => {
+        try {
+            const response = await fetch(apis().getProducts, {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const result = await response.json();
+            console.log("API Response:", result);
+
+            if (!response.ok) {
+                console.log(result.message);
+                return;
+            }
+
+            if (result.status && Array.isArray(result.products)) {
+                console.log("Fetched Products:", result.products);
+                setProducts(result.products);
+            } else {
+                console.log("Invalid response format");
+            }
+
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    };
 
     useEffect(() => {
-        const filtered = products.filter((product) =>
-            product.name.toLowerCase().includes(filterValue.toLowerCase()) ||
-        product.description.toLowerCase().includes(filterValue.toLocaleLowerCase())
-        );
+        fetchedData();
+    }, []);
+
+    useEffect(() => {
+        console.log("Filter Value:", filterValue);
+        console.log("Current Products:", Products);
+
+        const filtered = filterValue.trim()
+            ? Products.filter((product) =>
+                product.name.toLowerCase().includes(filterValue.toLowerCase()) ||
+                product.description.toLowerCase().includes(filterValue.toLowerCase())
+            )
+            : Products;
+
+        console.log("Filtered Products:", filtered);
         setFilteredProducts(filtered);
-    }, [filterValue])
-    
+    }, [filterValue, Products]);
 
     return (
         <div>

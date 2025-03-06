@@ -434,7 +434,10 @@ const ProductDetails: React.FC = () => {
                   <h2 className="text-lg font-bold mb-4">Add a Comment</h2>
                   <Rating
                     name="user-rating"
-                    onChange={(event, newValue) => setUserRating(newValue ?? 0)}
+                    onChange={(event, newValue) => {
+                      setUserRating(newValue ?? 0)
+                      console.log(event)
+                    }}
                   />
                   <textarea
                     className="w-full border-2 p-2 mt-2 h-[150px]"
